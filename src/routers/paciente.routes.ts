@@ -11,7 +11,6 @@ import { permitirPerfis } from '../middleware/authorize.middleware';
 
 const router = Router();
 
-// Todas as rotas de paciente exigem autenticação
 router.use(proteger);
 
 router.post('/', criarPaciente);

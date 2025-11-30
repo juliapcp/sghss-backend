@@ -13,7 +13,6 @@ class Usuario extends Model<InferAttributes<Usuario>, InferCreationAttributes<Us
         return bcrypt.compare(senha, this.senha);
     }
 
-    // Remove a senha ao serializar para JSON
     toJSON(): object {
         const values = { ...(this.get() as any) };
         delete values.senha;
@@ -39,15 +38,13 @@ Usuario.init(
                 }
             },
             beforeUpdate: async (usuario: Usuario) => {
-                // só re-hash se a senha foi alterada
-                // `changed` é um método do Sequelize Model
+        
                 try {
-                    // @ts-ignore
                     if (usuario.senha && usuario.changed && usuario.changed('senha')) {
                         usuario.senha = await bcrypt.hash(usuario.senha, 10);
                     }
                 } catch {
-                    // se changed não existir ou houver erro, ignore
+                   
                 }
             },
         },

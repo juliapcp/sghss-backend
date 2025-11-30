@@ -12,7 +12,7 @@ afterAll(async () => {
 
 describe('Paciente authorization', () => {
     test('paciente cannot delete, profissional can', async () => {
-        // registrar usuário paciente
+
         const pacienteUser = await request(app)
             .post('/api/auth/register')
             .send({ nome: 'PacienteUser', email: 'paciente1@example.com', senha: 'senha123', perfil: 'paciente' });
@@ -20,7 +20,7 @@ describe('Paciente authorization', () => {
         expect(pacienteUser.status).toBe(201);
         const pacienteToken = pacienteUser.body.token;
 
-        // registrar usuário profissional
+
         const profUser = await request(app)
             .post('/api/auth/register')
             .send({ nome: 'ProfUser', email: 'prof1@example.com', senha: 'senha123', perfil: 'profissional' });
@@ -28,7 +28,7 @@ describe('Paciente authorization', () => {
         expect(profUser.status).toBe(201);
         const profToken = profUser.body.token;
 
-        // criar um paciente (recurso) com dados únicos
+
         const novo = await request(app)
             .post('/api/pacientes')
             .set('Authorization', `Bearer ${pacienteToken}`)
@@ -37,14 +37,13 @@ describe('Paciente authorization', () => {
         expect(novo.status).toBe(201);
         const id = novo.body.id;
 
-        // tentar deletar com token do paciente (deve ser 403)
+
         const del1 = await request(app)
             .delete(`/api/pacientes/${id}`)
             .set('Authorization', `Bearer ${pacienteToken}`);
 
         expect(del1.status).toBe(403);
 
-        // deletar com token do profissional (deve ser 200)
         const del2 = await request(app)
             .delete(`/api/pacientes/${id}`)
             .set('Authorization', `Bearer ${profToken}`);

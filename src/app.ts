@@ -18,7 +18,6 @@ app.use(express.json());
 app.use('/api/pacientes', pacienteRoutes);
 app.use('/api/auth', authRoutes);
 
-// Swagger UI
 setupSwagger(app);
 
 app.use((req: Request, res: Response) => res.status(404).send('Rota não encontrada'));

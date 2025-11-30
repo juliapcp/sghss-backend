@@ -1,9 +1,4 @@
-%% Diagrama de Caso de Uso - SGHSS (ênfase Back-end)
-%% Inclui caso "Gerar relatórios horários" (por hora)
-%% Arquivo gerado automaticamente
 ```mermaid
-%% Diagrama de Caso de Uso - SGHSS (ênfase Back-end)
-%% Inclui caso "Gerar relatórios horários" (por hora)
 actor Paciente
 actor Profissional
 actor Administrador

@@ -1,3 +1,4 @@
+```mermaid
 erDiagram
 	direction TB
 	PACIENTES {
@@ -146,3 +147,4 @@ erDiagram
 	ADMINISTRADORES||--o{LOGS_AUDITORIA:"gera"
 	UNIDADES_HOSPITALARES||--o{PROFISSIONAIS_SAUDE:"contém"
 	UNIDADES_HOSPITALARES||--o{ADMINISTRADORES:"administra"
+```

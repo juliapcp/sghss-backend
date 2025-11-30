@@ -1,1 +1,171 @@
-# sghss-backend
+# 🏥 SGHSS – Backend  
+API REST desenvolvida em **Node.js + TypeScript + Express**, utilizando **SQLite** como banco de dados.  
+Este backend atende ao Sistema de Gestão Hospitalar e Serviços de Saúde (SGHSS).
+
+---
+
+## 🚀 Tecnologias Utilizadas
+
+- Node.js  
+- TypeScript  
+- Express  
+- SQLite  
+- dotenv  
+- helmet  
+- cors  
+- morgan  
+- ts-node  
+- nodemon  
+
+---
+
+## 📂 Estrutura do Projeto
+
+```
+/webapi/
+  /src/
+    /controllers/
+    /models/
+    /repositories/
+    /routers/
+    app.ts
+    server.ts
+  /config/
+    database.ts
+  .env
+  package.json
+  tsconfig.json
+```
+
+---
+
+## ⚙️ Pré-requisitos
+
+Antes de rodar o projeto, instale:
+
+- **Node.js** versão 16+
+- **npm**
+- (Opcional) **SQLite3** para visualizar o banco via terminal
+
+---
+
+## 📦 Instalação
+
+### 1️⃣ Clonar o repositório
+```sh
+git clone https://github.com/juliapcp/sghss-backend.git
+cd sghss-backend
+```
+
+### 2️⃣ Instalar dependências
+```sh
+npm install
+```
+
+---
+
+## 🔧 Configuração do Ambiente
+
+Crie na raiz do projeto um arquivo `.env` contendo:
+
+```
+PORT=3000
+```
+
+---
+
+## 🗄️ Banco de Dados
+
+O banco SQLite será criado automaticamente na primeira execução.
+
+Local:
+```
+src/config/database.sqlite
+```
+
+Para acessar via terminal:
+
+```sh
+sqlite3 src/config/database.sqlite
+```
+
+Comandos úteis:
+
+```sql
+.tables;
+SELECT * FROM pacientes;
+```
+
+---
+
+## ▶️ Executando o Projeto
+
+### Ambiente de desenvolvimento (hot reload):
+```sh
+npm run dev
+```
+
+### Compilar o TypeScript:
+```sh
+npm run compile
+```
+
+### Rodar versão compilada:
+```sh
+npm start
+```
+
+---
+
+## 🌐 Endpoints Principais
+
+### **Pacientes**
+```
+POST   /pacientes
+GET    /pacientes
+GET    /pacientes/:id
+PUT    /pacientes/:id
+DELETE /pacientes/:id
+```
+
+---
+
+## 🧪 Exemplo de JSON para criação de paciente
+
+```json
+{
+  "nome": "João da Silva",
+  "cpf": "12345678901",
+  "data_nascimento": "1990-05-20",
+  "email": "joao@email.com",
+  "telefone": "11999990000",
+  "endereco": "Rua das Flores, 123"
+}
+```
+
+---
+
+## 🛠️ Scripts Disponíveis
+
+| Script | Descrição |
+|--------|-----------|
+| `npm run dev` | Executa com nodemon (hot reload) |
+| `npm run compile` | Compila TypeScript para JavaScript na pasta dist |
+| `npm start` | Inicia o servidor compilado |
+
+---
+
+## 🔒 Segurança
+
+Este projeto utiliza:
+
+- `helmet` para cabeçalhos HTTP seguros  
+- `cors` para controle de acesso  
+- `morgan` para logs de requisições  
+
+---
+
+## 📄 Licença
+
+Projeto sob licença **ISC**.  
+Criado por **Julia Pontes Cardoso Pereira - RU 4574183**

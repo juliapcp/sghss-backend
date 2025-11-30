@@ -1,77 +1,202 @@
 # SGHSS - Backend
+# SGHSS — Backend
 
-Este repositório contém a implementação backend do projeto SGHSS (Sistema de Gestão Hospitalar e de Serviços de Saúde) com ênfase em Back-end.
+Implementação do back-end do SGHSS (Sistema de Gestão Hospitalar e de Serviços de Saúde) com ênfase em Back-end. Este README explica como rodar o projeto, executar um ciclo de autenticação, endpoints disponíveis, tecnologias utilizadas.
 
-Visão geral
-- Node.js + Express (TypeScript)
-- Sequelize (SQLite)
-- Autenticação JWT, hashing de senhas (bcryptjs)
-- Validações com Zod
-- Testes com Jest + Supertest
+Sumário
+- Visão geral
+- Requisitos
+- Configuração (variáveis de ambiente)
+- Como rodar (dev / produção / docker)
+- Ciclo de autenticação (exemplos curl)
+- Endpoints disponíveis
+- Testes
+- Documentação (Swagger / OpenAPI)
+- Tecnologias usadas
+- Boas práticas de segurança e LGPD
+- Como gerar artefatos para o PDF de entrega
 
-Endpoints principais
-- POST /api/auth/register - registra novo usuário (retorna token)
-- POST /api/auth/login - autentica e retorna token
-- GET /api/auth/me - retorna usuário autenticado
-- CRUD /api/pacientes - protegido por token (update/delete exigem perfis 'profissional' ou 'admin')
+## Visão geral
 
-Como rodar localmente
-1. Instalar dependências:
+O projeto fornece:
+- Autenticação JWT (registro, login, rota `/me`).
+- Hashing de senhas (bcryptjs) e não exposição da senha nas respostas.
+- CRUD de pacientes protegido por autenticação; operações sensíveis (update/delete) protegidas por autorização por `perfil` (roles: `paciente`, `profissional`, `admin`).
+- Validações de entrada com Zod.
+- Testes automatizados com Jest + Supertest.
+- Especificação OpenAPI (arquivo `docs/openapi.yaml`) e Swagger UI em `/api/docs`.
+
+## Requisitos
+
+- Node.js >= 16 recomendado
+- npm
+- (opcional) Docker para executar em container
+
+## Configuração (variáveis de ambiente)
+
+Crie um arquivo `.env` na raiz com pelo menos as variáveis:
+
+- `PORT` — porta onde a API irá rodar (default: 3000)
+- `JWT_SECRET` — segredo para assinar os tokens JWT
+
+Exemplo `.env`:
+
+```env
+PORT=3000
+JWT_SECRET=uma_chave_super_secreta
+```
+
+## Como rodar
+
+1) Instalar dependências:
+
 ```bash
 npm install
 ```
 
-2. Rodar em modo dev:
+2) Rodar em modo desenvolvimento (recarrega com alterações):
+
 ```bash
 npm run dev
 ```
 
-3. Rodar testes:
+3) Build e rodar em produção (compila para `dist`):
+
+```bash
+npm run compile
+npm start
+```
+
+## Ciclo de autenticação — exemplo (curl)
+
+1) Registrar um usuário (signup):
+
+```bash
+curl -s -X POST http://localhost:3000/api/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"nome":"Julia","email":"julia@example.com","senha":"senha123","perfil":"paciente"}' | jq
+```
+
+Resposta esperada (exemplo):
+
+```json
+{
+  "id": 1,
+  "nome": "Julia",
+  "email": "julia@example.com",
+  "token": "<JWT_TOKEN_AQUI>"
+}
+```
+
+2) Login (obter token):
+
+```bash
+curl -s -X POST http://localhost:3000/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"julia@example.com","senha":"senha123"}' | jq
+```
+
+Resposta contém `token` (JWT). Guarde-o para chamadas autenticadas.
+
+3) Usar token para acessar `/api/auth/me` (obter dados do usuário):
+
+```bash
+curl -s http://localhost:3000/api/auth/me -H "Authorization: Bearer <TOKEN>" | jq
+```
+
+4) Exemplo de chamada autenticada para listar pacientes:
+
+```bash
+curl -s http://localhost:3000/api/pacientes -H "Authorization: Bearer <TOKEN>" | jq
+```
+
+## Endpoints principais
+
+Autenticação
+- POST /api/auth/register — Registrar usuário (body: nome, email, senha, perfil)
+- POST /api/auth/login — Autenticar (body: email, senha)
+- GET /api/auth/me — Retornar usuário autenticado (Bearer token)
+
+Pacientes (todos protegidos por JWT)
+- POST /api/pacientes — Criar paciente (qualquer usuário autenticado)
+- GET /api/pacientes — Listar pacientes
+- GET /api/pacientes/:id — Obter paciente por id
+- PUT /api/pacientes/:id — Atualizar paciente (apenas `profissional` ou `admin`)
+- DELETE /api/pacientes/:id — Excluir paciente (apenas `profissional` ou `admin`)
+
+## Testes
+
+Executar a suíte de testes automatizados:
+
 ```bash
 npm test
 ```
 
-Documentação da API
-- A API possui especificação OpenAPI em `docs/openapi.yaml` e interface Swagger em `/api/docs` quando a aplicação estiver rodando.
+Os testes usam Jest + Supertest e cobrem fluxo de autenticação e regras de autorização (ex.: paciente não pode deletar paciente criado, profissional pode).
 
-Arquivos úteis para entrega acadêmica
-- Diagramas UML/DER: `docs/plantuml/*.puml` (renderize com PlantUML para incluir em PDF)
-- OpenAPI: `docs/openapi.yaml` (inclua um trecho ou link no PDF)
-- Testes automatizados: `tests/*.test.ts`
+## Documentação (Swagger / OpenAPI)
 
-Sugestões para o PDF final (obrigatório na entrega):
-1. Capa e sumário
-2. Introdução e escopo (explique que o foco foi Back-end)
-3. Requisitos (liste os funcionais e não-funcionais contemplados)
-4. Modelagem e DER (incluir imagem gerada a partir de `docs/plantuml/der.puml`)
-5. Implementação (principais arquivos, endpoints, fluxos de autenticação)
-6. Plano de testes (descrever casos de teste e anexar resultados/Jest)
-7. Conclusão e próximos passos (monitoramento, backups, LGPD)
+Especificação OpenAPI: `docs/openapi.yaml`.
 
-Link do repositório: inclua o link público do seu GitHub aqui.
+Ao executar a API localmente, a interface Swagger fica disponível em:
+
+```
+http://localhost:3000/api/docs
+```
+
+Use essa interface para visualizar endpoints e testar chamadas diretamente no navegador.
+
+## Tecnologias usadas
+
+- Node.js + Express (TypeScript)
+- Sequelize ORM com SQLite (para desenvolvimento / testes)
+- bcryptjs (hashing de senha)
+- jsonwebtoken (JWT)
+- zod (validação de entrada)
+- jest + supertest (testes)
+- swagger-ui-express + js-yaml (documentação Swagger)
+
+## Segurança e LGPD (observações)
+
+- Senhas são armazenadas hasheadas com bcryptjs.
+- Tokens JWT são usados para autenticação; utilize `JWT_SECRET` forte em produção.
+- Para conformidade LGPD em produção é recomendável:
+  - criptografar dados sensíveis em repouso,
+  - implementar logs/auditoria (quem fez o quê e quando),
+  - endpoints para exportação/remoção de dados pessoais e políticas de retenção;
+  - usar TLS/HTTPS e gerenciamento de segredos.
+
+## Gerar artefatos para o PDF de entrega
+
+- Diagrama DER / UML: `docs/plantuml/*.puml` (use PlantUML para gerar imagens)
+- Diagrama de caso de uso: `docs/mermaid/usecases.mmd` (renderize com Mermaid)
+- OpenAPI: inclua `docs/openapi.yaml` ou um trecho no PDF
+- Resultados de testes: inclua prints/saída do Jest ou anexos
+
+## Scripts úteis (package.json)
+
+- `npm run dev` — rodar em modo dev (ts-node / nodemon)
+- `npm run compile` — compilar TypeScript para `dist`
+- `npm start` — rodar o `dist` compilado
+- `npm test` — rodar testes (Jest)
+
+## Contribuição
+
+Se você quiser estender o backend (ex.: adicionar módulos de agendamento, profissionais, prontuário), abra uma issue ou envie um PR. Siga o padrão de código já existente e adicione testes para novas funcionalidades.
+
+## Licença
+
+Coloque aqui a licença do seu projeto (se aplicável). Por padrão, verifique o `package.json`.
 
 ---
-> Observação: para a entrega, gere um único PDF contendo o conteúdo acima e os anexos (diagramas, prints de testes). Use ferramentas como PlantUML para gerar imagens dos arquivos `*.puml`.
-# 🏥 SGHSS – Backend  
-API REST desenvolvida em **Node.js + TypeScript + Express**, utilizando **SQLite** como banco de dados.  
-Este backend atende ao Sistema de Gestão Hospitalar e Serviços de Saúde (SGHSS).
 
----
+Se quiser, eu posso também:
+- Gerar um arquivo Postman Collection com os endpoints;
+- Incluir screenshots do Swagger;
+- Gerar as imagens dos diagramas Mermaid/PlantUML e adicioná-las em `docs/diagrams/`.
 
-## 🚀 Tecnologias Utilizadas
+Diga qual dessas ações deseja que eu execute a seguir e eu faço automaticamente.
 
-- Node.js  
-- TypeScript  
-- Express  
-- SQLite  
-- dotenv  
-- helmet  
-- cors  
-- morgan  
-- ts-node  
-- nodemon  
-
----
 
 ## 📂 Estrutura do Projeto
 

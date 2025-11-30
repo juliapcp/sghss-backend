@@ -1,5 +1,4 @@
-# SGHSS - Backend
-# SGHSS — Backend
+# SGHSS - Backend 
 
 Implementação do back-end do SGHSS (Sistema de Gestão Hospitalar e de Serviços de Saúde) com ênfase em Back-end. Este README explica como rodar o projeto, executar um ciclo de autenticação, endpoints disponíveis, tecnologias utilizadas.
 

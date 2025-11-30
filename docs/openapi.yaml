@@ -1,0 +1,156 @@
+openapi: 3.0.0
+info:
+  title: SGHSS API
+  version: 1.0.0
+  description: API mínima do projeto SGHSS (autenticação e CRUD de pacientes)
+servers:
+  - url: /
+paths:
+  /api/auth/register:
+    post:
+      summary: Registrar usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+      responses:
+        '201':
+          description: Usuário criado
+  /api/auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: Login bem-sucedido
+  /api/auth/me:
+    get:
+      summary: Usuário atual
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Usuário autenticado
+  /api/pacientes:
+    post:
+      summary: Criar paciente
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Paciente'
+      responses:
+        '201':
+          description: Paciente criado
+    get:
+      summary: Listar pacientes
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de pacientes
+  /api/pacientes/{id}:
+    get:
+      summary: Buscar paciente por id
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Paciente encontrado
+    put:
+      summary: Atualizar paciente (profissional/admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Paciente'
+      responses:
+        '200':
+          description: Paciente atualizado
+    delete:
+      summary: Deletar paciente (profissional/admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Paciente deletado
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Register:
+      type: object
+      properties:
+        nome:
+          type: string
+        email:
+          type: string
+          format: email
+        senha:
+          type: string
+        perfil:
+          type: string
+          enum: [paciente, profissional, admin]
+      required: [nome, email, senha, perfil]
+    Login:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        senha:
+          type: string
+      required: [email, senha]
+    Paciente:
+      type: object
+      properties:
+        nome:
+          type: string
+        cpf:
+          type: string
+        data_nascimento:
+          type: string
+          format: date
+        telefone:
+          type: string
+        email:
+          type: string
+          format: email
+        endereco:
+          type: string
+      required: [nome, cpf, data_nascimento, email]

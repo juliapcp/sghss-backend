@@ -4,7 +4,7 @@ import path from 'path';
 const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: path.resolve(__dirname, '../../database.sqlite'),
-    logging: true
+    logging: false
 });
 
 export default sequelize;

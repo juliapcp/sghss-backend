@@ -11,18 +11,18 @@ afterAll(async () => {
     await sequelize.close();
 });
 
-describe('Auth flow', () => {
-    test('register -> login -> me', async () => {
+describe('Fluxo de login', () => {
+    test('registro -> login -> meus', async () => {
         const registerRes = await request(app)
             .post('/api/auth/register')
-            .send({ nome: 'Test', email: 'test@example.com', senha: 'senha123', perfil: 'paciente' });
+            .send({ nome: 'Julia', email: '4574183@alunouninter.com', senha: 'senha123', perfil: 'paciente' });
 
         expect(registerRes.status).toBe(201);
         expect(registerRes.body).toHaveProperty('token');
 
         const loginRes = await request(app)
             .post('/api/auth/login')
-            .send({ email: 'test@example.com', senha: 'senha123' });
+            .send({ email: '4574183@alunouninter.com', senha: 'senha123' });
 
         expect(loginRes.status).toBe(200);
         expect(loginRes.body).toHaveProperty('token');
@@ -31,6 +31,6 @@ describe('Auth flow', () => {
 
         const meRes = await request(app).get('/api/auth/me').set('Authorization', `Bearer ${token}`);
         expect(meRes.status).toBe(200);
-        expect(meRes.body).toHaveProperty('email', 'test@example.com');
+        expect(meRes.body).toHaveProperty('email', '4574183@alunouninter.com');
     });
 });
